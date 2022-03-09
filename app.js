@@ -72,42 +72,72 @@ passport.use(new FacebookStrategy({
 ));
 
 app.get("/", (req, res) => {
-  res.render("login")
+  res.render("login", {errorEmailMessage: "", errorPasswordMessage: ""})
 })
 app.get("/list", (req, res) => {
-  res.render("list", {listTitle: "Today", newListItems: []});
+  if(req.isAuthenticated()){
+    res.render("list", {listTitle: "Today", newListItems: []});
+  }else{
+    res.redirect("/login")
+  }
 })
 
 app.get("/about", (req, res) => {
  res.render("about");
 })
-
+app.get("/error", (req, res) => {
+  res.render("error")
+})
 app.get("/login", (req, res) => {
-   res.render("login");
+   res.render("login", {errorEmailMessage: "", errorPasswordMessage: ""});
 });
 app.post('/login',
   passport.authenticate('local',
-  { failureRedirect: '/login', failureMessage: true }),
+  { failureRedirect: '/error', failureMessage: true }),
   (req, res) => {
-      res.redirect('/');
+      res.redirect('/list');
 });
-
 
 app.get("/register", (req, res) => {
-  res.render("register");
+  res.render("register", {errorEmailMessage: "", errorPasswordMessage: ""});
 });
+
 app.post("/register", (req, res) => {
-  User.register({username: req.body.username },
-     req.body.password, (err, user) => {
+  const password = req.body.password
+  const username = req.body.username
+
+  let validateLength = true
+  let validateEmptyPassword = true
+  let validateEmptyUsername = true
+
+  if (password.length < 8){validateLength = false}
+  if (!username){validateEmptyUsername = false}
+  if (!password){validateEmptyPassword = false}
+  if (!validateEmptyPassword && !validateEmptyUsername){
+    const message = "Can't be empty"
+    res.render("register", {errorEmailMessage: message, errorPasswordMessage: message})
+  }else if (!validateEmptyPassword){
+    res.render("register", {errorEmailMessage: "", errorPasswordMessage: "Can't be empty"})
+  }else if (!validateEmptyUsername){
+    res.render("register", {errorEmailMessage: "Can't be empty", errorPasswordMessage: ""})
+  }else if (!validateLength){
+    res.render("register", {errorEmailMessage: "", errorPasswordMessage: "Password must be more than 8 symbols"})
+  }else{
+
+
+    User.register({username: username},
+      password, (err, user) => {
         if (err) {
           console.log(err);
           res.redirect("/register");
         }else{
           passport.authenticate('local')(req, res, () => {
-            res.redirect('/');
+            res.redirect('/list');
           })
         }
-    });
+      });
+  }
+
 })
 
 app.get('/logout', (req, res) => {
@@ -116,19 +146,19 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile'] }));
-app.get('/auth/google/secrets',
-  passport.authenticate('google', { failureRedirect: '/login' }),
+app.get('/auth/google/lists',
+  passport.authenticate('google', {failureRedirect: '/login' }),
   (req, res) => {
     // Successful authentication, redirect to secrets.
-    res.redirect('/secrets');
+    res.redirect('/list');
 });
 
 app.get('/auth/facebook', passport.authenticate('facebook'));
-app.get('/auth/facebook/secrets',
+app.get('/auth/facebook/lists',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   (req, res) => {
     // Successful authentication, redirect to secrets.
-    res.redirect('/secrets');
+    res.redirect('/list');
   });
 
 app.listen(3000, () => {

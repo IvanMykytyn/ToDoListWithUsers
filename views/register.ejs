@@ -1,20 +1,21 @@
 <%- include("partials/header") -%>
 
 <div class="form-section">
-  <form>
+  <form action="/register" method="POST">
     <div class="mb-3">
       <h2>Register</h2>
     </div>
 
     <div class="mb-3">
-      <input type="email" placeholder="Email" aria-describedby="emailHelp"
-      class="form-control form-control-lg" name="email">
-      <div id="emailHelp" class="form-text">error</div>
+      <input type="email" placeholder="Email" aria-describedby="emailError"
+      class="form-control form-control-lg" name="username">
+      <div id="emailError" class="form-text"><%= errorEmailMessage %></div>
     </div>
 
     <div class="mb-3">
-      <input type="password" placeholder="Password" name="password"
-      class="form-control form-control-lg">
+      <input type="password" placeholder="Password" aria-describedby="passwordError"
+      class="form-control form-control-lg" name="password">
+      <div id="passwordError" class="form-text"><%= errorPasswordMessage %></div>
     </div>
 
     <div class="mb-3 form-check form-switch">
@@ -38,13 +39,15 @@
 
     <div class="social-items">
       <div id="facebook" class="social-item">
-        <a class="mb-2 btn btn-outline-dark btn-rounded rounded-pill" href="" role="button">
+        <a class="mb-2 btn btn-outline-dark btn-rounded rounded-pill"
+         href="/auth/facebook" role="button">
           <i class="fa fa-facebook fa-lg"></i>
         </a>
       </div>
 
       <div id="google" class="social-item">
-        <a class="mb-2 btn btn-outline-dark btn-rounded rounded-pill" href="" role="button">
+        <a class="mb-2 btn btn-outline-dark btn-rounded rounded-pill"
+         href="/auth/google" role="button">
           <i class="fa fa-google fa-lg"></i>
         </a>
       </div>
@@ -55,6 +58,11 @@
         </a>
 
       </div>
+    </div>
+
+    <div class="sign-up">
+      <p>Already have an account?</p>
+      <a href="/login">LOG IN</a>
     </div>
 
   </form>

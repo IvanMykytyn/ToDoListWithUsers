@@ -1,0 +1,11 @@
+<%- include("partials/header") -%>
+
+<div class="error-page">
+  <form action="/login" method="get">
+    <h1>Something goes wrong</h1>
+    <p>Go back and try again</p>
+    <button type="button" class="btn btn-warning" onclick="this.form.submit()">Try again</button>
+  </form>
+</div>
+
+<%- include("partials/footer") -%>

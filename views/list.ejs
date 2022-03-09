@@ -11,10 +11,6 @@
     <% newListItems.forEach(listItem =>{ %>
       <form action="/delete" method="post">
         <div class="item">
-          <input type="checkbox" onchange="this.form.submit()" name="checkbox">
-          <p>wash dishes</p>
-        </div>
-        <div class="item">
           <input type="checkbox" onchange="this.form.submit()" name="checkbox" value="<%= listItem._id %>">
           <p><%= listItem.name  %></p>
         </div>
@@ -29,6 +25,8 @@
   </div>
 
 </div>
-
+<!-- <div class="logout-button">
+  <a href="/logout">LOG OUT</a>
+</div> -->
 
 <%- include("partials/footer") -%>

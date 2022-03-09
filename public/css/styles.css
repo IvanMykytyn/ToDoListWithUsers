@@ -69,7 +69,12 @@ h2{
 }
 .add-to-list i{padding: 10px;}
 #heading{margin-bottom: 20px;}
-
+.error-page{
+  background-color: white;
+  border-radius: 20px;
+  padding: 50px 80px;
+}
+.form-text{color: red}
 footer {
   color: rgba(255, 255, 255, 0.5);
   text-align: center;
