@@ -1,96 +1,76 @@
 html {
-  background-color: #E4E9FD;
-  background-image: -webkit-linear-gradient(65deg, #A683E3 50%, #E4E9FD 50%);
-  min-height: 1000px;
+  background-color: #D3D3D3;
+  background-image: -webkit-linear-gradient(65deg, #262626 50%, #D3D3D3 50%);
   font-family: 'helvetica neue';
 }
-
-h1 {
-  color: #fff;
-  padding: 10px;
-}
-
-.box {
-  max-width: 400px;
-  margin: 50px auto;
-  background: white;
-  border-radius: 5px;
-  box-shadow: 5px 5px 15px -5px rgba(0, 0, 0, 0.3);
-}
-
-#heading {
-  background-color: #A683E3;
-  text-align: center;
-}
-
-.item {
-  min-height: 70px;
+body{
+  min-height: 100vh;
+  background: inherit;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #F1F1F1;
+  justify-content: center;
+  flex-direction: column;
+  gap: 30px;
+}
+.form-section{
+  width: 500px;
+  padding: 20px 50px;
+  background-color: white;
+  min-height: 500px;
+  border-radius: 20px;
+}
+.or-section{
+  display: flex;
+  align-items: center;
+}
+.hr-section{
+  height: 30px;
+  padding: 10px 0;
+  flex: 10
+}
+.hr-text{
+  height: 30px;
+  padding: 12.5px 20px 10px;
+  flex: 1
+}
+.btn{
+  width: 100%;
+  padding: 10px 0;
 }
 
-.item:last-child {
-  border-bottom: 0;
+#facebook a {color: #3b5998; padding: 10px 0}
+#google a {color: #dd4b39; padding: 10px 0}
+#instagram a {color: #833AB4; padding: 10px 0}
+
+.sign-up{
+ display: flex;
+ justify-content: center;
+ gap: 10px;
+ margin-top: 15px;
+}
+.form-control:focus, .form-check-input:focus {
+  border-color: #D3D3D3;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #D3D3D3;
 }
 
-input:checked+p {
-  text-decoration: line-through;
-  text-decoration-color: #A683E3;
+.form-check input[type="checkbox"]:checked{
+  background-color: #262626;
+  border-color: #262626;
 }
-
-input[type="checkbox"] {
-  margin: 20px;
-}
-
-p {
-  margin: 0;
-  padding: 20px;
-  font-size: 20px;
-  font-weight: 200;
-  color: #00204a;
-}
-
-form.item {
+h2{
   text-align: center;
+  padding-bottom: 5px;
+}
+.add-to-list{display: flex;}
+.add-to-list button{
+  border: none;
+  border-radius: 10px;
   margin-left: 20px;
 }
-
-button {
-  min-height: 50px;
-  width: 50px;
-  border-radius: 50%;
-  border-color: transparent;
-  background-color: #A683E3;
-  color: #fff;
-  font-size: 30px;
-  padding-bottom: 4px;
-  border-width: 0;
-}
-
-input[type="text"] {
-  text-align: center;
-  height: 60px;
-  top: 10px;
-  border: none;
-  background: transparent;
-  font-size: 20px;
-  font-weight: 200;
-  width: 313px;
-}
-
-input[type="text"]:focus {
-  outline: none;
-  box-shadow: inset 0 -3px 0 0 #A683E3;
-}
-
-::placeholder {
-  color: grey;
-  opacity: 1;
-}
+.add-to-list i{padding: 10px;}
+#heading{margin-bottom: 20px;}
 
 footer {
-  color: white;
-  color: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.5);
   text-align: center;
 }
