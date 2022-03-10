@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs")
+const _ = require('lodash');
 const mongoose = require("mongoose");
 const passport = require('passport');
 const passportLocalMongoose = require('passport-local-mongoose');
@@ -29,6 +30,12 @@ mongoose.connect('mongodb://localhost/toDolist3DB')
 const userSchema = new mongoose.Schema({
   email: String,
   password: String,
+  lists: [{
+    title: String,
+    content: [{
+      text: String
+    }]
+  }],
   googleId: String,
   facebookId: String
 })
@@ -71,19 +78,126 @@ passport.use(new FacebookStrategy({
   }
 ));
 
-app.get("/", (req, res) => {
-  res.render("login", {errorEmailMessage: "", errorPasswordMessage: ""})
-})
-app.get("/list", (req, res) => {
-  if(req.isAuthenticated()){
-    res.render("list", {listTitle: "Today", newListItems: []});
-  }else{
-    res.redirect("/login")
-  }
+app.get("/about", (req, res) => {
+  res.render("about");
 })
 
-app.get("/about", (req, res) => {
- res.render("about");
+app.get("/userlists", (req, res) => {
+  const userId = req.user.id
+
+  User.findOne({_id: userId}, (err, foundUser) => {
+    if (!err){
+        res.render("userLists", {newLists: foundUser.lists, _ : _ })
+    }else{
+      console.log(err);
+    }
+  })
+})
+
+app.post("/userlists", (req, res) => {
+  const userId = req.user.id
+  const listName = req.body.newList
+
+  User.findOne({_id: userId}, (err, foundUser) => {
+    foundUser.lists.push({
+      title: listName,
+      content: []
+    })
+    foundUser.save(err => {
+      if (!err){
+        res.redirect("/userlists")
+      }
+    })
+  })
+})
+app.get("/userlists/:listName", (req, res) => {
+  const userId = req.user.id
+  const listTitle = _.lowerCase(req.params.listName);
+
+  User.findOne({_id: userId}, (err, foundUser) => {
+    foundUser.lists.forEach(list => {
+      if (_.lowerCase(list.title) === listTitle){
+        res.render("list", {listTitle: list.title, newListItems: list.content})
+      }
+    })
+  })
+})
+
+app.post("/userlists/add-item" , (req, res) => {
+  const listTitle = req.body.listName
+  const newListItem = req.body.newItem
+
+  User.findOne({'lists.title': listTitle}, (err, foundUser) =>{
+    foundUser.lists.forEach(list => {
+      if (list.title === listTitle){
+        list.content.push({text : newListItem})
+
+        foundUser.save( err => {
+          if(!err){
+            res.redirect("/userlists/" + _.kebabCase(listTitle))
+          }else{
+            console.log(err);
+          }
+        })
+      }
+
+    })
+  })
+})
+
+app.post("/deleteitem", (req, res) => {
+  const itemId = req.body.checkbox;
+  const listTitle = req.body.list;
+  const userId = req.user.id
+
+  User.findOne({_id: userId}, (err, foundUser) => {
+    if(!err){
+      foundUser.lists.forEach(list => {
+          if (list.title === listTitle){
+              list.content.forEach((item, i) => {
+                if (item._id == itemId){
+                  list.content.splice(i, 1)
+                  foundUser.save(err => {
+                    if(!err){
+                      res.redirect("/userlists/" + _.kebabCase(listTitle))
+                    }
+                  })
+                }
+              })
+
+            }
+          })
+        }
+      else{
+        console.log(err);
+      }
+  })
+})
+app.post("/deletelist", (req, res) => {
+  const listTitle = req.body.checkbox;
+  const userId = req.user.id
+
+  User.findOne({_id: userId}, (err, foundUser) => {
+    if(!err){
+      foundUser.lists.forEach((list, i) => {
+          if (_.kebabCase(list.title) === listTitle){
+            foundUser.lists.splice(i, 1)
+            foundUser.save(err => {
+              if(!err){
+                res.redirect("/userlists")
+              }
+            })
+          }
+      })
+    }else{
+      console.log(err);
+    }
+  })
+})
+
+
+app.get("/", (req, res) => {
+  res.render("login", {errorEmailMessage: "", errorPasswordMessage: ""})
 })
 app.get("/error", (req, res) => {
   res.render("error")
@@ -95,7 +209,7 @@ app.post('/login',
   passport.authenticate('local',
   { failureRedirect: '/error', failureMessage: true }),
   (req, res) => {
-      res.redirect('/list');
+      res.redirect('/userLists');
 });
 
 app.get("/register", (req, res) => {
@@ -110,7 +224,7 @@ app.post("/register", (req, res) => {
   let validateEmptyPassword = true
   let validateEmptyUsername = true
 
-  if (password.length < 8){validateLength = false}
+  if (password.length < 2){validateLength = false}
   if (!username){validateEmptyUsername = false}
   if (!password){validateEmptyPassword = false}
   if (!validateEmptyPassword && !validateEmptyUsername){
@@ -132,7 +246,7 @@ app.post("/register", (req, res) => {
           res.redirect("/register");
         }else{
           passport.authenticate('local')(req, res, () => {
-            res.redirect('/list');
+            res.redirect('/userlists');
           })
         }
       });
